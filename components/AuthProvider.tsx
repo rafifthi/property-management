@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { User } from "@supabase/supabase-js";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export interface LocalUser {
@@ -38,10 +38,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<LocalUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const supabase = getSupabaseBrowserClient();
+  // The Supabase browser client only exists in the browser; creating it here
+  // (not in the render body) keeps prerender/SSR from touching it.
+  const supabaseRef = useRef<SupabaseClient | null>(null);
 
   useEffect(() => {
     let active = true;
+    let supabase: SupabaseClient;
+    try {
+      supabase = getSupabaseBrowserClient();
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      return;
+    }
+    supabaseRef.current = supabase;
 
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
@@ -57,10 +68,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       active = false;
       listener.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await supabaseRef.current?.auth.signOut();
     setUser(null);
     router.push("/login");
   };
