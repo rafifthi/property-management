@@ -7,8 +7,7 @@ import { Building2, Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-const USERS_KEY = "rentra_users";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
   const [loading, setLoading] = useState(false);
@@ -18,25 +17,40 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setNotice("");
 
-    const raw = localStorage.getItem(USERS_KEY);
-    const users: Record<string, { password: string; fullName: string; phone: string }> = raw ? JSON.parse(raw) : {};
+    const supabase = getSupabaseBrowserClient();
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password,
+      options: {
+        data: { full_name: fullname.trim(), phone: phone.trim() },
+      },
+    });
 
-    if (users[email]) {
-      setError("An account with this email already exists");
+    if (signUpError) {
+      setError(signUpError.message || "Could not create account");
       setLoading(false);
       return;
     }
 
-    users[email] = { password, fullName: fullname, phone };
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    router.push("/login");
+    // With email confirmation enabled, no session is returned until the user
+    // confirms. Otherwise we have a session and can go straight in.
+    if (data.session) {
+      router.push("/");
+      router.refresh();
+      return;
+    }
+
+    setNotice("Account created. Check your email to confirm, then sign in.");
+    setLoading(false);
   };
 
   return (
@@ -53,6 +67,7 @@ export default function SignupPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="grid gap-4">
             {error && <p className="text-sm text-red-500">{error}</p>}
+            {notice && <p className="text-sm text-emerald-600">{notice}</p>}
             <div className="grid gap-2">
               <label className="text-sm font-medium" htmlFor="fullname">Full Name</label>
               <div className="relative">
@@ -64,7 +79,7 @@ export default function SignupPage() {
               <label className="text-sm font-medium" htmlFor="email">Email</label>
               <div className="relative">
                 <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input id="email" className="pl-9" placeholder="you@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input id="email" className="pl-9" placeholder="you@example.com" type="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
             </div>
             <div className="grid gap-2">

@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export interface LocalUser {
   email: string;
@@ -12,36 +14,53 @@ export interface LocalUser {
 interface AuthContextValue {
   user: LocalUser | null;
   loading: boolean;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
-  signOut: () => {},
+  signOut: async () => {},
 });
 
-const STORAGE_KEY = "rentra_current_user";
+function toLocalUser(user: User | null | undefined): LocalUser | null {
+  if (!user) return null;
+  const meta = user.user_metadata ?? {};
+  const fullName = (meta.full_name as string) ?? (meta.fullName as string) ?? "";
+  return {
+    email: user.email ?? "",
+    fullName: fullName || (user.email ?? ""),
+    phone: (meta.phone as string) ?? "",
+  };
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<LocalUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-    setLoading(false);
-  }, []);
+    let active = true;
 
-  const signOut = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      setUser(toLocalUser(data.session?.user));
+      setLoading(false);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(toLocalUser(session?.user));
+    });
+
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
     setUser(null);
     router.push("/login");
   };

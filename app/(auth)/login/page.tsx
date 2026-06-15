@@ -7,8 +7,7 @@ import { Building2, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-const USERS_KEY = "rentra_users";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -23,20 +22,18 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const raw = localStorage.getItem(USERS_KEY);
-    const users: Record<string, { password: string; fullName: string; phone: string }> = raw ? JSON.parse(raw) : {};
+    const supabase = getSupabaseBrowserClient();
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
 
-    const record = users[email];
-    if (!record || record.password !== password) {
-      setError("Invalid email or password");
+    if (signInError) {
+      setError(signInError.message || "Invalid email or password");
       setLoading(false);
       return;
     }
 
-    localStorage.setItem(
-      "rentra_current_user",
-      JSON.stringify({ email, fullName: record.fullName, phone: record.phone })
-    );
     router.push("/");
     router.refresh();
   };
@@ -59,7 +56,7 @@ export default function LoginPage() {
               <label className="text-sm font-medium" htmlFor="email">Email</label>
               <div className="relative">
                 <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input id="email" className="pl-9" placeholder="you@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input id="email" className="pl-9" placeholder="you@example.com" type="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
             </div>
             <div className="grid gap-2">
