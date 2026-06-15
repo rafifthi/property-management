@@ -106,25 +106,27 @@ function PropertyCard({ allUnits, property }: { allUnits: Unit[]; property: Prop
   const nonOccupied = occupancy.total - occupancy.occupied;
   const badgeStatus = unitSystem === "single" ? singleStatus : nonOccupied === 0 ? "full" : "vacant";
   const badgeLabel = unitSystem === "single" ? singleStatus : nonOccupied === 0 ? "Full" : `${nonOccupied} vacant`;
-  const rentDisplay = unitSystem === "single" ? formatRupiah(singleRent).replace(",00", "") : minRent === maxRent ? formatRupiah(minRent).replace(",00", "") : `${formatRupiah(minRent).replace(",00", "")} – ${formatRupiah(maxRent).replace(",00", "")}`;
+  const rentDisplay = unitSystem === "single" ? formatRupiah(singleRent).replace(",00", "") : minRent === maxRent ? formatRupiah(minRent).replace(",00", "") : `${formatRupiah(minRent).replace(",00", "")} - ${formatRupiah(maxRent).replace(",00", "")}`;
 
   return (
     <Link className="property-card" href={`/properties/${property.id}`} aria-label={`Open ${property.name}`}>
-      <div className="property-card__banner" style={{ background: property.image ? `linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.4)), center / cover no-repeat url("${property.image}")` : bannerColors[property.type] }}>
+      <div className="property-card__banner" style={{ background: property.image ? `center / cover no-repeat url("${property.image}")` : bannerColors[property.type] }}>
         {labels.length > 0 && (<div className="property-card__banner-labels">{labels.map((l) => (<span className="property-card__label-pill" key={l}>{l}</span>))}</div>)}
         <span className={`property-card__badge property-card__badge--${badgeStatus}`}>{badgeLabel}</span>
       </div>
       <div className="property-card__body">
-        <div className="property-card__name">{property.name}</div>
-        <div className="property-card__address">{property.address}</div>
+        <div className="property-card__summary">
+          <div className="property-card__name">{property.name}</div>
+          <div className="property-card__address">{property.address}</div>
+        </div>
         {unitSystem === "multi" ? (
           <div className="property-card__occupancy">
             <div className="property-card__occupancy-row"><span>{occupancy.occupied} of {occupancy.total} units</span><strong>{rate}%</strong></div>
             <div className="property-card__track"><div className="property-card__fill" style={{ width: `${rate}%` }} /></div>
           </div>
         ) : null}
+        <div className="property-card__rent">{rentDisplay}<span> / bulan</span></div>
       </div>
-      <div className="property-card__rent">{rentDisplay}<span> / bulan</span></div>
     </Link>
   );
 }
@@ -298,30 +300,32 @@ export default function PropertiesPage() {
         actions={<Button onClick={() => setIsNewPropertyOpen(true)}><Plus size={16} /> Add Property</Button>}
       />
 
-      <div className="property-toolbar">
-        <div className="relative">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input className="pl-9 w-[240px]" onChange={(e) => setQuery(e.target.value)} placeholder="Search properties..." value={query} />
+      <div className="module-surface">
+        <div className="property-toolbar">
+          <div className="relative">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input className="pl-9 w-[240px]" onChange={(e) => setQuery(e.target.value)} placeholder="Search properties..." value={query} />
+          </div>
+          <div className="flex gap-1">
+            {(["single", "multi"] as const).map((sys) => (
+              <button className={`properties-filter-pill${selectedSystems.includes(sys) ? " properties-filter-pill--active" : ""}`} key={sys} onClick={() => setSelectedSystems((prev) => prev.includes(sys) ? prev.filter((s) => s !== sys) : [...prev, sys])} type="button">
+                {sys === "single" ? "Single Unit" : "Multi Unit"}
+              </button>
+            ))}
+            {availableLabels.length > 0 && <span aria-hidden="true" className="w-px bg-border mx-1" />}
+            {availableLabels.map((label) => (
+              <button className={`properties-filter-pill${selectedLabels.includes(label) ? " properties-filter-pill--active" : ""}`} key={label} onClick={() => setSelectedLabels((prev) => prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label])} type="button">
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-1">
-          {(["single", "multi"] as const).map((sys) => (
-            <button className={`properties-filter-pill${selectedSystems.includes(sys) ? " properties-filter-pill--active" : ""}`} key={sys} onClick={() => setSelectedSystems((prev) => prev.includes(sys) ? prev.filter((s) => s !== sys) : [...prev, sys])} type="button">
-              {sys === "single" ? "Single Unit" : "Multi Unit"}
-            </button>
-          ))}
-          {availableLabels.length > 0 && <span aria-hidden="true" className="w-px bg-border mx-1" />}
-          {availableLabels.map((label) => (
-            <button className={`properties-filter-pill${selectedLabels.includes(label) ? " properties-filter-pill--active" : ""}`} key={label} onClick={() => setSelectedLabels((prev) => prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label])} type="button">
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      <section aria-label="Property list" className="property-card-grid">
-        {filteredProperties.map((property) => (<PropertyCard allUnits={allUnits} key={property.id} property={property} />))}
-        {filteredProperties.length === 0 && <p className="text-sm text-muted-foreground">No properties match the current filter.</p>}
-      </section>
+        <section aria-label="Property list" className="property-card-grid">
+          {filteredProperties.map((property) => (<PropertyCard allUnits={allUnits} key={property.id} property={property} />))}
+          {filteredProperties.length === 0 && <p className="text-sm text-muted-foreground">No properties match the current filter.</p>}
+        </section>
+      </div>
 
       <NewPropertyModal onCancel={() => setIsNewPropertyOpen(false)} onCreate={handleCreate} open={isNewPropertyOpen} />
     </div>

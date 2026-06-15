@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { DragEvent, ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import {
   ArrowLeft,
-  ChevronDown,
   ExternalLink,
   Flag,
   MapPin,
@@ -108,9 +107,31 @@ function plainTicketBody(value: string) { return value.replace(/<[^>]*>/g, " ").
 
 function TicketActionMenu({ children, onDelete, onPatch, ticket }: { children: ReactNode; onDelete: (id: string) => void; onPatch: (id: string, patch: TicketPatch) => void; ticket: MaintenanceTicket }) {
   const firstVendor = maintenanceVendors[0];
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [menuPoint, setMenuPoint] = useState({ x: 0, y: 0 });
+
+  const openContextMenu = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setMenuPoint({ x: event.clientX, y: event.clientY });
+    window.requestAnimationFrame(() => triggerRef.current?.click());
+  };
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+      <div className="ticket-context-target" onContextMenu={openContextMenu}>
+        {children}
+        <DropdownMenuTrigger asChild>
+          <button
+            aria-hidden="true"
+            className="ticket-context-trigger"
+            ref={triggerRef}
+            style={{ left: menuPoint.x, top: menuPoint.y }}
+            tabIndex={-1}
+            type="button"
+          />
+        </DropdownMenuTrigger>
+      </div>
       <DropdownMenuContent>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Edit priority</DropdownMenuSubTrigger>
@@ -447,14 +468,16 @@ export default function TicketsPage() {
         actions={<Button><Plus size={16} /> Create Ticket</Button>}
       />
 
-      <Tabs defaultValue="tickets">
-        <TabsList>
-          <TabsTrigger value="tickets">Tickets</TabsTrigger>
-          <TabsTrigger value="vendors">Vendors List</TabsTrigger>
-        </TabsList>
-        <TabsContent value="tickets"><TicketsPanel /></TabsContent>
-        <TabsContent value="vendors"><VendorsPanel /></TabsContent>
-      </Tabs>
+      <div className="module-surface">
+        <Tabs defaultValue="tickets">
+          <TabsList>
+            <TabsTrigger value="tickets">Tickets</TabsTrigger>
+            <TabsTrigger value="vendors">Vendors List</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tickets"><TicketsPanel /></TabsContent>
+          <TabsContent value="vendors"><VendorsPanel /></TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

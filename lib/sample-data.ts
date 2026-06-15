@@ -192,6 +192,23 @@ export const tenants: Tenant[] = [
     phoneWa: "+628771110004",
     idNumber: "3173********0004",
     emergencyContact: "Maya +628779990004"
+  },
+  {
+    id: "tenant-eko",
+    fullName: "Eko Saputra",
+    phoneWa: "+628151110005",
+    email: "eko.saputra@example.com",
+    idNumber: "3175********0005",
+    emergencyContact: "Sari +628159990005",
+    notes: "Pindah ke Surabaya setelah kontrak selesai. Tidak ada tunggakan."
+  },
+  {
+    id: "tenant-fitri",
+    fullName: "Fitri Handayani",
+    phoneWa: "+628991110006",
+    idNumber: "3174********0006",
+    emergencyContact: "Dewi +628999990006",
+    notes: "Mengakhiri sewa lebih awal karena pindah kantor."
   }
 ];
 
@@ -231,6 +248,42 @@ export const leases: Lease[] = [
     billingCycle: "monthly",
     dueDay: 15,
     status: "active"
+  },
+  {
+    id: "lease-andini-m102-2025",
+    unitId: "unit-m102",
+    tenantIds: ["tenant-andini"],
+    startDate: "2025-01-01",
+    endDate: "2025-12-31",
+    rentAmount: 1750000,
+    depositAmount: 1750000,
+    billingCycle: "monthly",
+    dueDay: 5,
+    status: "ended"
+  },
+  {
+    id: "lease-eko-m102-2024",
+    unitId: "unit-m102",
+    tenantIds: ["tenant-eko"],
+    startDate: "2024-03-01",
+    endDate: "2024-12-31",
+    rentAmount: 1700000,
+    depositAmount: 1700000,
+    billingCycle: "monthly",
+    dueDay: 5,
+    status: "ended"
+  },
+  {
+    id: "lease-fitri-a1511-2025",
+    unitId: "unit-a1511",
+    tenantIds: ["tenant-fitri"],
+    startDate: "2025-04-01",
+    endDate: "2026-03-31",
+    rentAmount: 6000000,
+    depositAmount: 6000000,
+    billingCycle: "monthly",
+    dueDay: 1,
+    status: "terminated"
   }
 ];
 

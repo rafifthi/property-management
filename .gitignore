@@ -8,4 +8,5 @@ coverage
 *.log
 *.tsbuildinfo
 .codex/
-.claude/settings.local.json
+.claude/
+.impeccable/

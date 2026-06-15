@@ -14,10 +14,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SettingsActionBar } from "../_components/settings-action-bar";
 
 export default function GeneralSettingsPage() {
+  const [dirty, setDirty] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const markDirty = () => {
+    setDirty(true);
+    setSaved(false);
+  };
+
+  const handleSave = () => {
+    setDirty(false);
+    setSaved(true);
+  };
+
+  const handleReset = () => {
+    setDirty(false);
+    setSaved(false);
+  };
+
   return (
-    <section className="content-grid">
+    <section className="content-grid" onChange={markDirty}>
       <Card>
         <CardHeader>
           <CardTitle>Profile</CardTitle>
@@ -113,7 +132,7 @@ export default function GeneralSettingsPage() {
         <CardContent className="grid gap-6">
           <div className="grid gap-2">
             <Label htmlFor="bank">Bank</Label>
-            <Select defaultValue="bca">
+            <Select defaultValue="bca" onValueChange={markDirty}>
               <SelectTrigger id="bank"><SelectValue placeholder="Select bank" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="bca">BCA</SelectItem>
@@ -139,7 +158,7 @@ export default function GeneralSettingsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="country">Country</Label>
-              <Select defaultValue="id">
+              <Select defaultValue="id" onValueChange={markDirty}>
                 <SelectTrigger id="country"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="id">Indonesia</SelectItem>
@@ -154,15 +173,12 @@ export default function GeneralSettingsPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Checkbox id="defaultPayout" defaultChecked />
+            <Checkbox id="defaultPayout" defaultChecked onCheckedChange={markDirty} />
             <Label htmlFor="defaultPayout" className="text-sm font-normal">Set as default bank account</Label>
-          </div>
-
-          <div>
-            <Button>Update</Button>
           </div>
         </CardContent>
       </Card>
+      <SettingsActionBar dirty={dirty} saved={saved} onReset={handleReset} onSave={handleSave} />
     </section>
   );
 }

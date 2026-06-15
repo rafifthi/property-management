@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, CreditCard, MessageCircle, ReceiptText, Settings2, Users } from "lucide-react";
+import { Bell, CreditCard, LayoutList, MessageCircle, ReceiptText, Settings2, Users } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const submodules = [
+  { key: "/settings", label: "Overview", icon: <LayoutList size={16} /> },
   { key: "/settings/general", label: "General", icon: <Settings2 size={16} /> },
   { key: "/settings/billing", label: "Billing & Invoice", icon: <ReceiptText size={16} /> },
   { key: "/settings/payments", label: "Payment Gateway", icon: <CreditCard size={16} /> },
@@ -26,21 +28,18 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       />
 
       <div className="settings-layout">
-        <nav className="settings-nav" aria-label="Settings submodules">
-          {submodules.map((item) => {
-            const isActive = pathname === item.key || (item.key === "/settings/general" && pathname === "/settings");
-            return (
-              <Link
-                className={`settings-nav__item ${isActive ? "settings-nav__item--active" : ""}`}
-                href={item.key}
-                key={item.key}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <Tabs value={pathname} className="module-tabs-root">
+          <TabsList className="module-tabs" aria-label="Settings submodules">
+            {submodules.map((item) => (
+              <TabsTrigger asChild className="module-tabs__trigger" key={item.key} value={item.key}>
+                <Link href={item.key}>
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
         <main className="settings-content">{children}</main>
       </div>
     </div>

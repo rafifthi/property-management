@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronUp, Edit3, Plus, Search } from "lucide-react";
 import { useParams } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatRupiah } from "@/lib/format";
 import { leases, properties, tenants, unitGroups, units } from "@/lib/sample-data";
 import type { Property, Unit, UnitStatus } from "@/lib/types";
@@ -178,9 +178,13 @@ export default function PropertyDetailPage() {
         <div className="property-detail-hero__body"><PropertyStats property={property} propertyUnits={propertyUnits} /></div>
       </section>
 
-      <div className="property-detail-tabs" role="tablist" aria-label="Property sections">
-        {propertyTabs.map((tab) => (<button className={tab === "Units" ? "is-active" : ""} key={tab} type="button">{tab}</button>))}
-      </div>
+      <Tabs defaultValue="Units" className="module-tabs-root">
+        <TabsList className="module-tabs" aria-label="Property sections">
+          {propertyTabs.map((tab) => (
+            <TabsTrigger className="module-tabs__trigger" key={tab} value={tab}>{tab}</TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {unitSystem === "single" ? <SingleUnitPanel unit={propertyUnits[0]} /> : (
         <>

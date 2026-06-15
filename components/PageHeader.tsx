@@ -20,10 +20,10 @@ export default function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="mb-5 flex items-start justify-between gap-6">
+    <header className="page-header">
       <div className="min-w-0">
         {breadcrumbs?.length ? (
-          <nav className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground" aria-label="Breadcrumb">
+          <nav className="page-header__breadcrumbs" aria-label="Breadcrumb">
             {breadcrumbs.map((crumb, index) => (
               <span className="inline-flex items-center gap-2 last:text-foreground last:font-medium [&:not(:last-child)]:after:content-['/'] [&:not(:last-child)]:after:text-muted-foreground" key={`${crumb.label}-${index}`}>
                 {crumb.href ? <Link className="transition-colors hover:text-foreground" href={crumb.href}>{crumb.label}</Link> : <span>{crumb.label}</span>}
@@ -36,7 +36,7 @@ export default function PageHeader({
         <h1 className="m-0 text-xl font-semibold tracking-tight text-foreground">{title}</h1>
         {copy ? <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{copy}</p> : null}
       </div>
-      {actions ? <div className="flex flex-wrap items-center justify-end gap-2">{actions}</div> : null}
+      {actions ? <div className="page-header__actions">{actions}</div> : null}
     </header>
   );
 }

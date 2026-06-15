@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -14,6 +14,7 @@ import {
   Home,
   Landmark,
   LogOut,
+  Menu,
   ReceiptText,
   Search,
   Settings,
@@ -43,7 +44,13 @@ const secondaryNavItems = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
+
+  // Close the mobile drawer whenever the route changes.
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const initials = user
     ? user.fullName
@@ -61,8 +68,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <TooltipProvider>
-      <div className="shell">
-        <aside className={`shell-sidebar${collapsed ? " shell-sidebar--collapsed" : ""}`}>
+      <div className={`shell${collapsed ? " shell--collapsed" : ""}`}>
+        <div
+          className={`shell-backdrop${mobileOpen ? " shell-backdrop--visible" : ""}`}
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+        <aside
+          className={`shell-sidebar${collapsed ? " shell-sidebar--collapsed" : ""}${
+            mobileOpen ? " shell-sidebar--mobile-open" : ""
+          }`}
+        >
           <div className="brand">
             <div className="brand__mark">
               <Building2 size={14} />
@@ -153,6 +169,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="shell-main">
           <header className="shell-header">
+            <button
+              aria-label="Open menu"
+              className="shell-header__menu"
+              onClick={() => setMobileOpen(true)}
+              type="button"
+            >
+              <Menu size={18} />
+            </button>
             <div className="global-search">
               <Search size={15} color="#9ca3af" />
               <input placeholder="Search tenant, unit, ticket..." />

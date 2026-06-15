@@ -5,7 +5,6 @@ import Link from "next/link";
 import MetricCard from "@/components/MetricCard";
 import PageHeader from "@/components/PageHeader";
 import StatusTag from "@/components/StatusTag";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -13,7 +12,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatDate, formatRupiah, percent } from "@/lib/format";
 import { dashboardMetrics, getLease, getProperty, getUnit, propertyOccupancy } from "@/lib/metrics";
 import { invoices, properties, tickets } from "@/lib/sample-data";
-import type { Invoice, Property } from "@/lib/types";
 
 const metrics = dashboardMetrics();
 
@@ -39,7 +37,7 @@ export default function DashboardPage() {
         }
       />
 
-      <section className="content-grid grid-4" style={{ marginBottom: 18 }}>
+      <section className="content-grid grid-4 bg-tranparent" style={{ marginBottom: 18 }}>
         <MetricCard
           label="Occupancy"
           value={percent(metrics.occupancyRate)}
@@ -66,7 +64,7 @@ export default function DashboardPage() {
         />
       </section>
 
-      <section className="content-grid grid-2" style={{ marginBottom: 18 }}>
+      <div className="content-grid grid-2" style={{ marginBottom: 18 }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Portfolio Occupancy</CardTitle>
@@ -116,7 +114,7 @@ export default function DashboardPage() {
               const unit = getUnit(ticket.unitId);
               const property = unit ? getProperty(unit) : undefined;
               return (
-                <div key={ticket.id} className="flex items-start justify-between gap-3 pb-3 border-b border-border last:border-0">
+                <div key={ticket.id} className="dashboard-list-row">
                   <div className="grid gap-0.5">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{ticket.title}</span>
@@ -130,7 +128,7 @@ export default function DashboardPage() {
             })}
           </CardContent>
         </Card>
-      </section>
+      </div>
 
       <Card>
         <CardHeader>
