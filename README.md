@@ -22,6 +22,12 @@ Create `.env.local` from `.env.example` when connecting Supabase.
 cp .env.example .env.local
 ```
 
+Authentication uses **Supabase Auth** (email/password). Set
+`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`
+or login/signup will not work. For a smooth prototype flow, either disable
+"Confirm email" in **Supabase → Authentication → Providers → Email**, or
+confirm the emailed link before signing in.
+
 ## Current prototype scope
 
 The app is a frontend-first P0/P1 prototype with static sample data. It is structured so the next step can replace `lib/sample-data.ts` with Supabase queries and server actions without changing the information architecture.

@@ -52,16 +52,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setMobileOpen(false);
   }, [pathname]);
 
-  const initials = user
-    ? user.fullName
-        .split(" ")
-        .map((s) => s[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "??";
+  const displayName = user?.fullName?.trim() || user?.email || "User";
 
-  const displayName = user?.fullName ?? user?.email ?? "User";
+  const initials =
+    displayName
+      .split(" ")
+      .map((s) => s[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "??";
 
   const selectedKey =
     [...navItems, ...secondaryNavItems].find((item) => item.key !== "/" && pathname.startsWith(item.key))?.key ?? "/";

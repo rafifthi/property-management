@@ -7,8 +7,8 @@ import { Building2, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-const USERS_KEY = "rentra_users";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { LOCAL_ADMIN_HINT, signInLocal } from "@/lib/local-auth";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -17,26 +17,37 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const localMode = !isSupabaseConfigured();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const raw = localStorage.getItem(USERS_KEY);
-    const users: Record<string, { password: string; fullName: string; phone: string }> = raw ? JSON.parse(raw) : {};
+    // Local fallback when Supabase isn't configured.
+    if (!isSupabaseConfigured()) {
+      if (!signInLocal(email, password)) {
+        setError("Invalid email or password");
+        setLoading(false);
+        return;
+      }
+      router.push("/");
+      router.refresh();
+      return;
+    }
 
-    const record = users[email];
-    if (!record || record.password !== password) {
-      setError("Invalid email or password");
+    const supabase = getSupabaseBrowserClient();
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    if (signInError) {
+      setError(signInError.message || "Invalid email or password");
       setLoading(false);
       return;
     }
 
-    localStorage.setItem(
-      "rentra_current_user",
-      JSON.stringify({ email, fullName: record.fullName, phone: record.phone })
-    );
     router.push("/");
     router.refresh();
   };
@@ -54,12 +65,17 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="grid gap-4">
+            {localMode && (
+              <p className="text-xs text-muted-foreground rounded-md bg-muted px-3 py-2">
+                Local mode — sign in with <span className="font-medium text-foreground">{LOCAL_ADMIN_HINT}</span>
+              </p>
+            )}
             {error && <p className="text-sm text-red-500">{error}</p>}
             <div className="grid gap-2">
               <label className="text-sm font-medium" htmlFor="email">Email</label>
               <div className="relative">
                 <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input id="email" className="pl-9" placeholder="you@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input id="email" className="pl-9" placeholder="you@example.com" type="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
             </div>
             <div className="grid gap-2">
