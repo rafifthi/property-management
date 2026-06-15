@@ -7,7 +7,8 @@ import { Building2, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { LOCAL_ADMIN_HINT, signInLocal } from "@/lib/local-auth";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -16,11 +17,24 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const localMode = !isSupabaseConfigured();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    // Local fallback when Supabase isn't configured.
+    if (!isSupabaseConfigured()) {
+      if (!signInLocal(email, password)) {
+        setError("Invalid email or password");
+        setLoading(false);
+        return;
+      }
+      router.push("/");
+      router.refresh();
+      return;
+    }
 
     const supabase = getSupabaseBrowserClient();
     const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -51,6 +65,11 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="grid gap-4">
+            {localMode && (
+              <p className="text-xs text-muted-foreground rounded-md bg-muted px-3 py-2">
+                Local mode — sign in with <span className="font-medium text-foreground">{LOCAL_ADMIN_HINT}</span>
+              </p>
+            )}
             {error && <p className="text-sm text-red-500">{error}</p>}
             <div className="grid gap-2">
               <label className="text-sm font-medium" htmlFor="email">Email</label>

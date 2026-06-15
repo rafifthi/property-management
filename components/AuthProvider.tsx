@@ -3,13 +3,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { loadLocalUser, signOutLocal, type LocalUser } from "@/lib/local-auth";
 
-export interface LocalUser {
-  email: string;
-  fullName: string;
-  phone: string;
-}
+export type { LocalUser };
 
 interface AuthContextValue {
   user: LocalUser | null;
@@ -44,6 +41,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true;
+
+    // Local fallback: no Supabase configured → read the local admin session.
+    if (!isSupabaseConfigured()) {
+      setUser(loadLocalUser());
+      setLoading(false);
+      return;
+    }
+
     let supabase: SupabaseClient;
     try {
       supabase = getSupabaseBrowserClient();
@@ -71,7 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabaseRef.current?.auth.signOut();
+    if (supabaseRef.current) {
+      await supabaseRef.current.auth.signOut();
+    } else {
+      signOutLocal();
+    }
     setUser(null);
     router.push("/login");
   };

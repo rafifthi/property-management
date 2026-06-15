@@ -3,6 +3,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 let client: SupabaseClient | undefined;
 
+// Whether the public Supabase env vars are present. When false, the app falls
+// back to the local admin login (see lib/local-auth.ts).
+export function isSupabaseConfigured(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
 // Single shared browser client (avoids multiple GoTrue instances).
 export function getSupabaseBrowserClient(): SupabaseClient {
   if (client) return client;

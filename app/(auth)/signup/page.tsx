@@ -7,7 +7,8 @@ import { Building2, Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { LOCAL_ADMIN_HINT } from "@/lib/local-auth";
 
 export default function SignupPage() {
   const [loading, setLoading] = useState(false);
@@ -19,12 +20,20 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const router = useRouter();
+  const localMode = !isSupabaseConfigured();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setNotice("");
+
+    // No sign-up in local mode — there is only the admin credential.
+    if (localMode) {
+      setError(`Local mode — sign in with ${LOCAL_ADMIN_HINT}.`);
+      setLoading(false);
+      return;
+    }
 
     const supabase = getSupabaseBrowserClient();
     const { data, error: signUpError } = await supabase.auth.signUp({
