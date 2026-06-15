@@ -1,4 +1,5 @@
 import type {
+  DepositTransaction,
   Document,
   IntegrationSetting,
   Invoice,
@@ -347,6 +348,107 @@ export const payments: Payment[] = [
     method: "transfer",
     reference: "BCA-REF-9913",
     paidAt: "2026-03-08T03:00:00.000Z"
+  }
+];
+
+export const depositTransactions: DepositTransaction[] = [
+  // Active leases — deposit fully collected and held.
+  {
+    id: "dep-m101-1",
+    leaseId: "lease-m101",
+    type: "collected",
+    amount: 1850000,
+    date: "2026-01-01",
+    method: "transfer",
+    reference: "BCA-REF-0101",
+    note: "Deposit on move-in"
+  },
+  {
+    id: "dep-rb03-1",
+    leaseId: "lease-rb03",
+    type: "collected",
+    amount: 15000000,
+    date: "2026-03-01",
+    method: "transfer",
+    reference: "BCA-REF-0301",
+    note: "Deposit on move-in"
+  },
+  // Shared apartment — deposit collected in two installments (partial → held).
+  {
+    id: "dep-a1207-1",
+    leaseId: "lease-a1207",
+    type: "collected",
+    amount: 3600000,
+    date: "2026-02-15",
+    method: "transfer",
+    reference: "BCA-REF-0215",
+    note: "First half of deposit"
+  },
+  {
+    id: "dep-a1207-2",
+    leaseId: "lease-a1207",
+    type: "collected",
+    amount: 3600000,
+    date: "2026-03-05",
+    method: "cash",
+    note: "Balance of deposit"
+  },
+  // Ended lease — settled clean, fully refunded.
+  {
+    id: "dep-andini-m102-1",
+    leaseId: "lease-andini-m102-2025",
+    type: "collected",
+    amount: 1750000,
+    date: "2025-01-01",
+    method: "transfer",
+    reference: "BCA-REF-2501"
+  },
+  {
+    id: "dep-andini-m102-2",
+    leaseId: "lease-andini-m102-2025",
+    type: "refund",
+    amount: 1750000,
+    date: "2026-01-05",
+    method: "transfer",
+    reference: "BCA-REF-RFND-01",
+    note: "Refunded in full — no deductions"
+  },
+  // Terminated lease — deductions for unpaid rent + damage, remainder forfeited.
+  {
+    id: "dep-fitri-1",
+    leaseId: "lease-fitri-a1511-2025",
+    type: "collected",
+    amount: 6000000,
+    date: "2025-04-01",
+    method: "transfer",
+    reference: "BCA-REF-2504"
+  },
+  {
+    id: "dep-fitri-2",
+    leaseId: "lease-fitri-a1511-2025",
+    type: "deduction",
+    amount: 4000000,
+    date: "2026-03-31",
+    note: "Unpaid rent (Feb–Mar 2026)"
+  },
+  {
+    id: "dep-fitri-3",
+    leaseId: "lease-fitri-a1511-2025",
+    type: "deduction",
+    amount: 1200000,
+    date: "2026-03-31",
+    note: "Repainting + door repair",
+    linkedTicketId: "ticket-a1511-door"
+  },
+  {
+    id: "dep-fitri-4",
+    leaseId: "lease-fitri-a1511-2025",
+    type: "refund",
+    amount: 800000,
+    date: "2026-04-03",
+    method: "transfer",
+    reference: "BCA-REF-RFND-02",
+    note: "Net refund after deductions"
   }
 ];
 

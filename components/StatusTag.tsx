@@ -20,6 +20,8 @@ const variantMap: Record<string, BadgeProps["variant"]> = {
   closed: "destructive",
   failed: "destructive",
   overdue: "destructive",
+  terminated: "destructive",
+  ended: "secondary",
   partial: "warning",
   assigned: "warning",
   scheduled: "default",

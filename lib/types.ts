@@ -98,6 +98,29 @@ export interface Payment {
   paidAt: string;
 }
 
+export type DepositTxnType = "collected" | "deduction" | "refund" | "forfeit";
+export type DepositStatus =
+  | "due"
+  | "partial"
+  | "held"
+  | "settling"
+  | "refunded"
+  | "forfeited";
+
+// A single movement on a lease's security deposit (uang jaminan).
+// held = sum(collected) − sum(deduction) − sum(refund) − sum(forfeit).
+export interface DepositTransaction {
+  id: string;
+  leaseId: string;
+  type: DepositTxnType;
+  amount: number; // positive magnitude
+  date: string; // ISO date or datetime
+  method?: "cash" | "transfer" | "gateway";
+  reference?: string;
+  note?: string;
+  linkedTicketId?: string; // damage deductions can cite a maintenance ticket
+}
+
 export interface UtilityMeter {
   id: string;
   unitId: string;
