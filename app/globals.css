@@ -3531,3 +3531,297 @@ a.tenant-table__row:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Lease / deposit module ─────────────────────────────────────── */
+.deposit-grid {
+  display: grid;
+  gap: 14px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  margin-bottom: 16px;
+}
+
+.deposit-grid > div {
+  display: grid;
+  gap: 2px;
+}
+
+.deposit-grid span {
+  color: var(--tertiary);
+  font-size: 11px;
+}
+
+.deposit-grid strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.deposit-progress {
+  margin-bottom: 16px;
+}
+
+.deposit-progress__label {
+  color: var(--tertiary);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.deposit-ledger {
+  border-top: 1px solid var(--line);
+}
+
+.deposit-ledger__row {
+  align-items: center;
+  border-bottom: 1px solid var(--table-border);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 11px 0;
+}
+
+.deposit-ledger__row:last-child {
+  border-bottom: 0;
+}
+
+.deposit-ledger__type {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.deposit-ledger__meta {
+  color: var(--tertiary);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.deposit-ledger__amount {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.deposit-ledger__amount.is-credit {
+  color: #16a34a;
+}
+
+.deposit-ledger__amount.is-debit {
+  color: #ef4444;
+}
+
+.lease-tenants {
+  display: grid;
+  gap: 8px;
+}
+
+.lease-tenants__row {
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 10px 12px;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.lease-tenants__row:hover {
+  background: var(--panel);
+  border-color: var(--primary);
+}
+
+.lease-tenants__name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lease-tenants__meta {
+  color: var(--tertiary);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.lease-tenants__row > svg {
+  color: var(--tertiary);
+}
+
+/* ── Money forms / dialogs ──────────────────────────────────────── */
+.money-form {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.money-form__field {
+  display: grid;
+  gap: 6px;
+}
+
+.money-form__field--wide {
+  grid-column: 1 / -1;
+}
+
+.money-form__footer {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+/* ── Invoice detail ─────────────────────────────────────────────── */
+.invoice-detail {
+  display: grid;
+  gap: 4px;
+}
+
+.invoice-detail__section {
+  color: var(--tertiary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+.invoice-detail__row {
+  align-items: center;
+  border-bottom: 1px solid var(--table-border);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 9px 0;
+}
+
+.invoice-detail__desc {
+  color: var(--ink);
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.invoice-detail__muted {
+  color: var(--tertiary);
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.invoice-detail__total {
+  align-items: center;
+  border-top: 2px solid var(--line);
+  display: flex;
+  font-size: 15px;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding: 10px 0;
+}
+
+/* ── Move-out settlement ────────────────────────────────────────── */
+.settle {
+  display: grid;
+  gap: 16px;
+}
+
+.settle__summary {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.settle__summary > div {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+}
+
+.settle__summary span {
+  color: var(--tertiary);
+  font-size: 11px;
+}
+
+.settle__summary strong {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.settle__summary strong.is-danger {
+  color: #ef4444;
+}
+
+.settle__rows {
+  display: grid;
+  gap: 8px;
+}
+
+.settle__rows-head {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  justify-content: space-between;
+}
+
+.settle__row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 130px 36px;
+}
+
+.settle__amount {
+  text-align: right;
+}
+
+.settle__totals {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.settle__totals > div {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.settle__totals span {
+  color: var(--tertiary);
+  font-size: 13px;
+}
+
+.settle__net span,
+.settle__net strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.settle__net span {
+  color: var(--ink);
+}
+
+.settle__outcome {
+  display: grid;
+  gap: 8px;
+}
+
+.settle__outcome label {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.settle__refund-fields {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 140px minmax(0, 1fr);
+  margin-top: 4px;
+}
+
+@media (max-width: 560px) {
+  .money-form {
+    grid-template-columns: 1fr;
+  }
+
+  .settle__summary {
+    grid-template-columns: 1fr;
+  }
+}
